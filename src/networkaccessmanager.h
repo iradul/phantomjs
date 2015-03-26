@@ -39,6 +39,9 @@
 #include <QStringList>
 
 #include "networkreplytracker.h"
+/***** < ivan *****/
+#include "callback.h"
+/***** ivan > *****/
 
 class Config;
 class QNetworkDiskCache;
@@ -95,6 +98,10 @@ public:
     void setCaptureContent(const QStringList &patterns);
 
     void setCookieJar(QNetworkCookieJar *cookieJar);
+/***** < ivan *****/
+    bool abortAllRequests;
+    Callback *requestsFilter;
+/***** ivan > *****/
 
 protected:
     bool m_ignoreSslErrors;

@@ -45,6 +45,8 @@
 #include "networkaccessmanager.h"
 #include "networkreplyproxy.h"
 
+#include "terminal.h"
+
 // 10 MB
 const qint64 MAX_REQUEST_POST_BODY_SIZE = 10 * 1000 * 1000;
 
@@ -163,6 +165,10 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent, const Config *config
     , m_sslConfiguration(QSslConfiguration::defaultConfiguration())
     , m_replyTracker(this)
 {
+/***** < ivan *****/
+    abortAllRequests = false;
+    requestsFilter = new Callback(this);
+/***** ivan > *****/
     if (config->diskCacheEnabled()) {
         m_networkDiskCache = new QNetworkDiskCache(this);
         m_networkDiskCache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
@@ -290,6 +296,19 @@ void NetworkAccessManager::setCookieJar(QNetworkCookieJar *cookieJar)
 // protected:
 QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest & request, QIODevice * outgoingData)
 {
+/***** < ivan *****/
+    if (abortAllRequests)
+    {
+        qDebug() << "Network - Aboring request";
+        return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));;
+    }
+    QVariant res = requestsFilter->call(QVariantList() << request.url().toString().toLower());
+    if (res.canConvert<bool>() && res.toBool()) {
+        qDebug() << "Network - Filter";
+        return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));;
+    }
+    qDebug() << "Network - Creating request";
+/***** ivan > *****/
     QNetworkRequest req(request);
     QString scheme = req.url().scheme().toLower();
     bool isLocalFile = req.url().isLocalFile();
