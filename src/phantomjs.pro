@@ -30,6 +30,7 @@ HEADERS += \
     net.h \
     sql.h \
     itimer.h \
+    smtp.h \
 # /***** ivan > *****/
     phantom.h \
     callback.h \
@@ -56,6 +57,7 @@ SOURCES += phantom.cpp \
     net.cpp \
     sql.cpp \
     itimer.cpp \
+    smtp.cpp \
 # /***** ivan > *****/
     callback.cpp \
     webpage.cpp \
