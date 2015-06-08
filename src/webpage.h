@@ -620,7 +620,11 @@ public:
     Q_INVOKABLE QWebElement _one(const QString &selector) const;
     Q_INVOKABLE QString resolveUrl(const QString &href) const;
     Q_INVOKABLE void setContentRaw(const QByteArray & data, const QString & mimeType = QString(), const QString & baseUrl = QString());
+<<<<<<< HEAD
     Q_INVOKABLE void showGUI();
+=======
+    Q_INVOKABLE void showGUI(bool scrollbars = true);
+>>>>>>> Ability to display GUI webpage on Windows platform
 /***** ivan > *****/
 };
 
