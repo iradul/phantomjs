@@ -1315,7 +1315,7 @@ function decorateNewPage(opts, page) {
             error: e,
             errorMessage: em,
             timeout: (t) ? true : false,
-            duration: (new Date()).getTime() - currentRequest.started
+            duration: (currentRequest.started) ? (new Date()).getTime() - currentRequest.started : 0,
         }
         resetCurrentRequest();
     }
@@ -1417,7 +1417,7 @@ function decorateNewPage(opts, page) {
                     break;
                 case 200:
                 default:
-                    finishCurrentRequest(response.status, response.statusText); // something is wrong
+                    finishCurrentRequest(response.status, response.statusText);
                     break;
             }
         }
@@ -1477,7 +1477,14 @@ function decorateNewPage(opts, page) {
                     this.stop();
                     startCurrentRequest(cmd.url);
                     this.open(cmd.url);
-                    if (this.waitFor(cmd.timeout, 1000, function() {
+                    if (this.waitFor(cmd.timeout, 100, function() {
+                        if (!page.loading && !currentRequest.finished) {
+                            // TODO: page has loaded but finished signal is not set
+                            // this can happend when same url is opened twice and page was loaded from cach, hard code this to 200:OK
+                            // CAUTION: this might not be safe
+_utils.debug('page is loaded without network request');
+                            finishCurrentRequest(200, "OK");
+                        }
                         return currentRequest.finished;
                     })) {
                         this.waitForPage();
