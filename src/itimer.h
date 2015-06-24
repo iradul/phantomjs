@@ -31,8 +31,7 @@ public slots:
 	void done();
     QObject *_getTestCallback();
 public:
-	ITimer(void);
-	~ITimer(void);
+	ITimer(QObject *parent = 0);
 	int counter() const;
 	bool useCallback() const;
 	void setUseCallback(bool ucb);

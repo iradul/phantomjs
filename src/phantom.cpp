@@ -475,7 +475,7 @@ QObject* Phantom::createNet()
 
 QObject* Phantom::createEventLoopTimer()
 {
-    ITimer *timer = new ITimer();
+    ITimer *timer = new ITimer(this);
     return timer;
 }
 

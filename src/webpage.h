@@ -588,7 +588,7 @@ signals:
     void _waitForTest(int);
 private:
     QEventLoop m_loop;
-    ITimer m_timer;
+    ITimer *m_timer;
     const QString *m_waitSelector;
     // this is holder for _waitForTestFunctionResult property (write only - seter setWaitForTestFunctionResult)
     // it holds returning value that signal _waitForTest should set as result of "wait for" testing 

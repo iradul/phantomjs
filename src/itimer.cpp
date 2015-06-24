@@ -4,17 +4,14 @@
 
 #include <QDebug>
 
-ITimer::ITimer(void)
+ITimer::ITimer(QObject *parent)
+	: QTimer(parent)
 {
 qDebug() << "ITimer::ITimer";
 	connect(this, SIGNAL(timeout()), this, SLOT(incCounter()));
 	this->setSingleShot(false);
     m_useCallback = false;
     m_testCallback = new Callback(this);
-}
-
-ITimer::~ITimer(void)
-{
 }
 
 void ITimer::incCounter()

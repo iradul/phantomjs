@@ -423,6 +423,7 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
     m_customWebPage->setViewportSize(QSize(800, 600));
     m_waitTimeout = 5000;
     m_waitInterval = 200;
+    m_timer = new ITimer(this);
 /***** ivan > *****/
 }
 
@@ -1714,7 +1715,7 @@ void WebPage::_wait(int timeout)
 {
     if (timeout > 0) {
         qDebug() << "wait for" << timeout << "ms";
-        m_timer.start(timeout, timeout);
+        m_timer->start(timeout, timeout);
     }
 }
 
@@ -1722,9 +1723,9 @@ bool WebPage::waitForPage(int loadstart_timeout)
 {
     if (loadstart_timeout > 0) {
         qDebug() << "waiting for page to start loading" << loadstart_timeout << "ms";
-        connect(this, SIGNAL(loadStarted()), &m_timer, SLOT(done()));
-        m_timer.start(loadstart_timeout, loadstart_timeout);
-        disconnect(this, SIGNAL(loadStarted()), &m_timer, SLOT(done()));
+        connect(this, SIGNAL(loadStarted()), m_timer, SLOT(done()));
+        m_timer->start(loadstart_timeout, loadstart_timeout);
+        disconnect(this, SIGNAL(loadStarted()), m_timer, SLOT(done()));
     }
     else if (loadstart_timeout < 0) {
         qDebug() << "waiting for page to start loading infinitely!";
@@ -1755,15 +1756,15 @@ bool WebPage::_waitForFunction(int timeout, int interval)
     qDebug() << "wating for function with timeout" << timeout << "ms and interval" << interval << "ms";
     
     m_waitForTestFunctionResult = false;
-    emit _waitForTest(m_timer.counter()); // signaler should set sWaitForTestFunctionResult property as test result
+    emit _waitForTest(m_timer->counter()); // signaler should set sWaitForTestFunctionResult property as test result
     qDebug() << "test result is:" << m_waitForTestFunctionResult;
     if (m_waitForTestFunctionResult) {
         return true;
     }
 
-    connect(&m_timer, SIGNAL(test()), this, SLOT(_waitForTestFunction()));
-    bool result = m_timer.start(interval, timeout);
-    disconnect(&m_timer, SIGNAL(test()), this, SLOT(_waitForTestFunction()));
+    connect(m_timer, SIGNAL(test()), this, SLOT(_waitForTestFunction()));
+    bool result = m_timer->start(interval, timeout);
+    disconnect(m_timer, SIGNAL(test()), this, SLOT(_waitForTestFunction()));
 
     qDebug() << "done wating for function:" << result;
 
@@ -1772,12 +1773,12 @@ bool WebPage::_waitForFunction(int timeout, int interval)
 
 void WebPage::_waitForTestFunction()
 {
-    qDebug() << "emiting test function signal..." << m_timer.counter();
+    qDebug() << "emiting test function signal..." << m_timer->counter();
     m_waitForTestFunctionResult = false;
-    emit _waitForTest(m_timer.counter()); // signaler should set sWaitForTestFunctionResult property as test result
+    emit _waitForTest(m_timer->counter()); // signaler should set sWaitForTestFunctionResult property as test result
     qDebug() << "test result is:" << m_waitForTestFunctionResult;
     if (m_waitForTestFunctionResult) {
-        m_timer.done();
+        m_timer->done();
     }
 }
 
