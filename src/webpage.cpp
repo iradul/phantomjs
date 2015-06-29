@@ -1406,7 +1406,6 @@ QObject* WebPage::_getJsInterruptCallback()
     return m_callbacks->getJsInterruptCallback();
 }
 
-<<<<<<< HEAD
 /***** < ivan *****/
 QObject *WebPage::_getFilterCallback()
 {
@@ -1415,9 +1414,6 @@ QObject *WebPage::_getFilterCallback()
 /***** ivan > *****/
 
 void WebPage::sendEvent(const QString &type, const QVariant &arg1, const QVariant &arg2, const QString &mouseButton, const QVariant &modifierArg)
-=======
-void WebPage::sendEvent(const QString& type, const QVariant& arg1, const QVariant& arg2, const QString& mouseButton, const QVariant& modifierArg)
->>>>>>> base
 {
     Qt::KeyboardModifiers keyboardModifiers(modifierArg.toInt());
     // Normalize the event "type" to lowercase

@@ -224,15 +224,11 @@ private:
     QList<QPointer<WebPage> > m_pages;
     QList<QPointer<WebServer> > m_servers;
     Config m_config;
-<<<<<<< HEAD
     CookieJar *m_defaultCookieJar;
 /***** < ivan *****/
     QTimer m_globalTimeoutTimer;
     Callback *m_globalTimeoutCallback;
 /***** ivan > *****/
-=======
-    CookieJar* m_defaultCookieJar;
->>>>>>> base
 
     friend class CustomPage;
 };
