@@ -55,7 +55,7 @@ class Phantom : public QObject
     Q_PROPERTY(QString libraryPath READ libraryPath WRITE setLibraryPath)
     Q_PROPERTY(QString outputEncoding READ outputEncoding WRITE setOutputEncoding)
     Q_PROPERTY(QVariantMap version READ version)
-    Q_PROPERTY(QObject *page READ page)
+    Q_PROPERTY(QObject* page READ page)
     Q_PROPERTY(bool cookiesEnabled READ areCookiesEnabled WRITE setCookiesEnabled)
     Q_PROPERTY(QVariantList cookies READ cookies WRITE setCookies)
     Q_PROPERTY(bool webdriverMode READ webdriverMode)
@@ -66,27 +66,27 @@ class Phantom : public QObject
 
 private:
     // Private constructor: the Phantom class is a singleton
-    Phantom(QObject *parent = 0);
+    Phantom(QObject* parent = 0);
     void init();
 
 public:
-    static Phantom *instance();
+    static Phantom* instance();
     virtual ~Phantom();
 
     QVariantMap defaultPageSettings() const;
 
     QString outputEncoding() const;
-    void setOutputEncoding(const QString &encoding);
+    void setOutputEncoding(const QString& encoding);
 
     bool execute();
     int returnValue() const;
 
     QString libraryPath() const;
-    void setLibraryPath(const QString &libraryPath);
+    void setLibraryPath(const QString& libraryPath);
 
     QVariantMap version() const;
 
-    QObject *page() const;
+    QObject* page() const;
 
     /**
      * Pointer to the Config loaded at startup.
@@ -95,7 +95,7 @@ public:
      * @brief config
      * @return Pointer to the current Config(uration)
      */
-    Config *config();
+    Config* config();
 
     bool printDebugMessages() const;
 
@@ -155,7 +155,7 @@ public slots:
      * @param cookies Expects a QList of QVariantMaps
      * @return Boolean "true" if at least 1 cookie was set
      */
-    bool setCookies(const QVariantList &cookies);
+    bool setCookies(const QVariantList& cookies);
     /**
      * All the Cookies in the CookieJar
      *
@@ -171,14 +171,14 @@ public slots:
      * @param cookie Cookie in QVariantMap format
      * @return Boolean "true" if cookie was added
      */
-    bool addCookie(const QVariantMap &cookie);
+    bool addCookie(const QVariantMap& cookie);
     /**
      * Delete cookie by name from the CookieJar
      * @brief deleteCookie
      * @param cookieName Name of the Cookie to delete
      * @return Boolean "true" if cookie was deleted
      */
-    bool deleteCookie(const QString &cookieName);
+    bool deleteCookie(const QString& cookieName);
     /**
      * Delete All Cookies from the CookieJar
      * @brief clearCookies
@@ -192,7 +192,7 @@ public slots:
      * @param port The proxy port
      * @param proxyType The type of this proxy
      */
-    void setProxy(const QString &ip, const qint64 &port = 80, const QString &proxyType = "http", const QString &user = NULL, const QString &password = NULL);
+    void setProxy(const QString& ip, const qint64& port = 80, const QString& proxyType = "http", const QString& user = NULL, const QString& password = NULL);
 
     // exit() will not exit in debug mode. debugExit() will always exit.
     void exit(int code = 0);
@@ -202,7 +202,7 @@ signals:
     void aboutToExit(int code);
 
 private slots:
-    void printConsoleMessage(const QString &msg);
+    void printConsoleMessage(const QString& msg);
 
     void onInitialized();
 /***** < ivan *****/
@@ -213,22 +213,26 @@ private:
     void doExit(int code);
 
     Encoding m_scriptFileEnc;
-    WebPage *m_page;
+    WebPage* m_page;
     bool m_terminated;
     int m_returnValue;
     QString m_script;
     QVariantMap m_defaultPageSettings;
-    FileSystem *m_filesystem;
-    System *m_system;
-    ChildProcess *m_childprocess;
+    FileSystem* m_filesystem;
+    System* m_system;
+    ChildProcess* m_childprocess;
     QList<QPointer<WebPage> > m_pages;
     QList<QPointer<WebServer> > m_servers;
     Config m_config;
+<<<<<<< HEAD
     CookieJar *m_defaultCookieJar;
 /***** < ivan *****/
     QTimer m_globalTimeoutTimer;
     Callback *m_globalTimeoutCallback;
 /***** ivan > *****/
+=======
+    CookieJar* m_defaultCookieJar;
+>>>>>>> base
 
     friend class CustomPage;
 };
