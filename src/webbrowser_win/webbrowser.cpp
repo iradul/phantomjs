@@ -59,6 +59,12 @@ void WebBrowser::setPage(WebPage* webpage) {
     }
 }
 
+void WebBrowser::exit() {
+    if (instance != 0) {
+        instance->deleteLater();
+    }
+}
+
 void WebBrowser::setupInspectors() {
     // we want to show [console] tab on phantom's inspector
     QWebView* wv =(QWebView*) phantomInspector->findChild<QWidget *>();

@@ -538,7 +538,9 @@ QObject* Phantom::_getGlobalTimeoutCallback() {
 }
 
 void Phantom::showGUI() {
-    m_page->mainFrame()->evaluateJavaScript("var page = require('webpage').create(); page.onError=function(){}; page.open('http://www.google.com')","");
+    if (m_pages.count() == 1) {
+        m_page->mainFrame()->evaluateJavaScript("var page = require('webpage').create(); page.onError=function(){}; page.open('http://www.google.com')","");
+    }
     WebBrowser::run(m_page->mainFrame()->page(), (WebPage*)m_pages.last());
 }
 
@@ -626,5 +628,8 @@ void Phantom::doExit(int code)
     }
     m_pages.clear();
     m_page = 0;
+/***** < ivan *****/
+    WebBrowser::exit();
+/***** ivan > *****/
     QApplication::instance()->exit(code);
 }

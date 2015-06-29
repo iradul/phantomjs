@@ -1299,7 +1299,7 @@ function decorateNewPage(opts, page) {
         currentRequest = {
             finished: true,
             id: -1,
-            trace: 0,
+            trace: 0, // 0 - unknown , 1 - waiting for request , 2 - waiting for response
             url: undefined,
             origin: undefined,
             redirections: []
@@ -1476,18 +1476,23 @@ function decorateNewPage(opts, page) {
                     }
                     this.stop();
                     startCurrentRequest(cmd.url);
+                    var shouldWaitForPage = true;
                     this.open(cmd.url);
-                    if (this.waitFor(cmd.timeout, 100, function() {
-                        if (!page.loading && !currentRequest.finished) {
-                            // TODO: page has loaded but finished signal is not set
-                            // this can happend when same url is opened twice and page was loaded from cach, hard code this to 200:OK
-                            // CAUTION: this might not be safe
-_utils.debug('page is loaded without network request');
-                            finishCurrentRequest(200, "OK");
-                        }
+                    var waitForResponseInterval = 100,
+                        waitForRequestTimeout = 2000; // if loading doesn't start after this amount of time we will consider this done
+                    if (this.waitFor(cmd.timeout, waitForResponseInterval, function () {
+                        if (waitForRequestTimeout > 0) waitForRequestTimeout -= waitForResponseInterval;
+                        // we have waited for request to start for too long (waitForRequestTimeout)
+                        // make sure that request was never created (trace==1)
+                        if (waitForRequestTimeout <= 0 && currentRequest.trace === 1) {
+                            shouldWaitForPage = false; // we shouldn't wait for page because request was never created
+                            finishCurrentRequest(0, "HTTP request never created");
+                    }
                         return currentRequest.finished;
                     })) {
-                        this.waitForPage();
+                        if (shouldWaitForPage) {
+                            this.waitForPage();
+                        }
                     }
                     else {
                         finishCurrentRequest(0, undefined, 'opensync timeout', 0, true);

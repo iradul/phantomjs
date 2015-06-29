@@ -10,6 +10,7 @@ class WebBrowser
 public:
     static void run(QWebPage *phantomPage, WebPage *webpage);
     static void setPage(WebPage* webpage);
+    static void exit();
 private:
     WebBrowser();
 };
