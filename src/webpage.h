@@ -145,7 +145,9 @@ public:
     void setCustomHeaders(const QVariantMap& headers);
     QVariantMap customHeaders() const;
 
-    void showInspector(const int remotePort = -1);
+    /***** < ivan *****/
+    int showInspector(const int remotePort = -1);
+    /***** ivan > *****/
 
     QString footer(int page, int numPages);
     qreal footerHeight() const;

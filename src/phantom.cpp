@@ -241,12 +241,14 @@ bool Phantom::execute()
         qDebug() << "Phantom - execute: Starting normal mode";
 
         if (m_config.debug()) {
+            /***** < ivan *****/
+            m_config.setRemoteDebugPort(m_page->showInspector(m_config.remoteDebugPort()));
+            /***** ivan > *****/
             // Debug enabled
             if (!Utils::loadJSForDebug(m_config.scriptFile(), m_config.scriptLanguage(), m_scriptFileEnc, QDir::currentPath(), m_page->mainFrame(), m_config.remoteDebugAutorun())) {
                 m_returnValue = -1;
                 return false;
             }
-            m_page->showInspector(m_config.remoteDebugPort());
         } else {
             if (!Utils::injectJsInFrame(m_config.scriptFile(), m_config.scriptLanguage(), m_scriptFileEnc, QDir::currentPath(), m_page->mainFrame(), true)) {
                 m_returnValue = -1;
@@ -541,6 +543,12 @@ QObject* Phantom::_getGlobalTimeoutCallback() {
         m_globalTimeoutCallback = new Callback(this);
     }
     return m_globalTimeoutCallback;
+}
+
+int Phantom::remoteDebugPort() const
+{
+    QApplication::processEvents();
+    return m_config.remoteDebugPort();
 }
 
 void Phantom::showGUI() {

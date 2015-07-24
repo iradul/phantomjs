@@ -78,14 +78,21 @@ InspectorServerQt::~InspectorServerQt()
     close();
 }
 
-void InspectorServerQt::listen(quint16 port)
+/***** < ivan *****/
+int InspectorServerQt::listen(quint16 port)
+/***** ivan > *****/
 {
     if (m_tcpServer)
-        return;
+        /***** < ivan *****/
+        return m_tcpServer->serverPort();
+        /***** ivan > *****/
 
     m_tcpServer = new QTcpServer();
     m_tcpServer->listen(QHostAddress::Any, port);
     connect(m_tcpServer, SIGNAL(newConnection()), SLOT(newConnection()));
+    /***** < ivan *****/
+    return m_tcpServer->serverPort();
+    /***** ivan > *****/
 }
 
 void InspectorServerQt::close()

@@ -62,6 +62,7 @@ class Phantom : public QObject
 /***** < ivan *****/
     Q_PROPERTY(QString remoteLibraryPath READ remoteLibraryPath WRITE setRemoteLibraryPath)
     Q_PROPERTY(int globalTimeout READ globalTimeout WRITE setGlobalTimeout)
+    Q_PROPERTY(int remoteDebugPort READ remoteDebugPort)
 /***** ivan > *****/
 
 private:
@@ -113,6 +114,7 @@ public:
     void setRemoteLibraryPath(const QString &remoteLibraryPath);
     int globalTimeout() const;
     void setGlobalTimeout(int timeout);
+    int remoteDebugPort() const;
 /***** ivan > *****/
 
 public slots:
