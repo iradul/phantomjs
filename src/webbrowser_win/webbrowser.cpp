@@ -8,6 +8,7 @@
 #include <QWebInspector>
 #include <QSplitter>
 #include <QTimer>
+#include <QDebug>
 #include "../phantom.cpp"
 
 WebBrowser* WebBrowser::instance = 0;
@@ -24,7 +25,7 @@ void WebBrowser::run(QWebPage *phantomPage, WebPage *webpage) {
         else {
             instance->phantomInspector->setVisible(true);
             // we have to delay inspectors setup because they are not loaded immediately
-            QTimer::singleShot(100, instance, SLOT(setupInspectors()));
+            QTimer::singleShot(50, instance, SLOT(setupInspectors()));
         }
 
         setPage(webpage);
@@ -68,7 +69,10 @@ void WebBrowser::exit() {
 void WebBrowser::setupInspectors() {
     // we want to show [console] tab on phantom's inspector
     QWebView* wv =(QWebView*) phantomInspector->findChild<QWidget *>();
-    if (wv != 0) {
+    if (wv == 0) { // it's not ready yet, try 100 seconds later
+        QTimer::singleShot(50, instance, SLOT(setupInspectors()));
+    }
+    else {
         phantomInspector->setFocus(Qt::OtherFocusReason);
         wv->page()->mainFrame()->evaluateJavaScript(
             "document.addEventListener('DOMContentLoaded',function(){" \
