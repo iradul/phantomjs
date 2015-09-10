@@ -346,7 +346,7 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op, const QNetworkR
         qDebug() << "Network - Filter";
         return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));;
     }
-    qDebug() << "Network - Creating request";
+    qDebug() << "Network - Creating request :" << request.url().toString();
 /***** ivan > *****/
     QNetworkRequest req(request);
     QString scheme = req.url().scheme().toLower();

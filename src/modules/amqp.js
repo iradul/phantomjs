@@ -120,7 +120,7 @@ exports.create = function() {
         copyFunction(queue, nativeQueue, "get");
         copyFunction(queue, nativeQueue, "ack");
         copyFunction(queue, nativeQueue, "cancel");
-        Object.defineProperty(client, "empty", { get: function () { return nativeQueue.empty; } });
+        Object.defineProperty(queue, "empty", { get: function () { return nativeQueue.empty; } });
         defineSignalHandler(queue, nativeQueue, queueHandlers, "onDeclared", "declared");
         defineSignalHandler(queue, nativeQueue, queueHandlers, "onBound", "bound");
         defineSignalHandler(queue, nativeQueue, queueHandlers, "onUnbound", "unbound");
