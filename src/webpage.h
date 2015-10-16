@@ -273,7 +273,10 @@ public:
     QString focusedFrameName() const;
 
 public slots:
-    void openUrl(const QString& address, const QVariant& op, const QVariantMap& settings);
+/***** < ivan *****/
+    //void openUrl(const QString& address, const QVariant& op, const QVariantMap& settings);
+    void openUrl(const QString& address, const QVariant& op);
+/***** ivan > *****/
     void release();
     void close();
 
@@ -522,6 +525,10 @@ public slots:
 
     void clearMemoryCache();
 
+/***** < ivan *****/
+    void applySettings(const QVariantMap& defaultSettings);
+/***** ivan > *****/
+
 signals:
     void initialized();
     void loadStarted();
@@ -548,7 +555,9 @@ private slots:
 private:
     QImage renderImage();
     bool renderPdf(const QString& fileName);
-    void applySettings(const QVariantMap& defaultSettings);
+/***** < ivan *****/
+    //void applySettings(const QVariantMap& defaultSettings);
+/***** ivan > *****/
     QString userAgent() const;
 
     /**

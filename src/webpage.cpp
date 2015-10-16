@@ -891,13 +891,18 @@ bool WebPage::clearCookies()
     return m_cookieJar->deleteCookies(this->url());
 }
 
-void WebPage::openUrl(const QString& address, const QVariant& op, const QVariantMap& settings)
+/***** < ivan *****/
+//void WebPage::openUrl(const QString& address, const QVariant& op, const QVariantMap& settings)
+void WebPage::openUrl(const QString& address, const QVariant& op)
+/***** ivan > *****/
 {
     QString operation;
     QByteArray body;
     QNetworkRequest request;
 
-    applySettings(settings);
+    /***** < ivan *****/
+    //applySettings(settings);
+    /***** ivan > *****/
     m_customWebPage->triggerAction(QWebPage::Stop);
 
     if (op.type() == QVariant::String) {
