@@ -562,11 +562,13 @@ void Phantom::showGUI() {
 
 void Phantom::exit(int code)
 {
-    if (m_config.debug()) {
-        Terminal::instance()->cout("Phantom::exit() called but not quitting in debug mode.");
-    } else {
+/***** < ivan *****/
+    // if (m_config.debug()) {
+    //     Terminal::instance()->cout("Phantom::exit() called but not quitting in debug mode.");
+    // } else {
         doExit(code);
-    }
+    // }
+/***** ivan > *****/
 }
 
 void Phantom::debugExit(int code)
