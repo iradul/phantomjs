@@ -292,6 +292,21 @@ QString Net::_fetchUrl(const QString &url, const QString &method, const QVariant
             break;
     }
 
+	QList<QPair<QByteArray,QByteArray>> headersList = m_reply->rawHeaderPairs();
+	QRegExp rxIsNumber("\\d+");
+	QVariantMap headers;
+	for (int i = 0; i<headersList.count(); ++i)
+	{
+		QString value = QString(headersList[i].second);
+		if (rxIsNumber.exactMatch(value)) {
+			headers.insert(QString(headersList[i].first), value.toInt());
+		}
+		else {
+			headers.insert(QString(headersList[i].first), value);
+		}
+	}
+	m_fetchResult.insert("headers", headers);
+
     if (isFileDownload) {
         m_fetchResult.insert("size", m_reply->header(QNetworkRequest::ContentLengthHeader).toLongLong());
         delete m_reply;
