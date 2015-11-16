@@ -9,6 +9,8 @@
 #include <QMap>
 #include <QVariantMap>
 
+#include "cookiejar.h"
+
 class Phantom;
 
 class Net : public QObject
@@ -20,8 +22,9 @@ class Net : public QObject
     Q_PROPERTY(QString localIP READ localIP)
     Q_PROPERTY(QString localHostName READ localHostName)
     Q_PROPERTY(QString userAgent READ userAgent WRITE setUserAgent)
+    Q_PROPERTY(QObject* cookieJar READ cookieJar WRITE setCookieJarFromQObject)
 public:
-    Net(QObject *parent);
+    Net(QObject *parent, CookieJar *cookieJar);
 private:
     QNetworkAccessManager* m_net;
     QNetworkReply* m_reply;
@@ -31,6 +34,7 @@ private:
     QTimer m_timeoutTimer;
     QString m_userAgent;
     QVariantMap m_fetchResult;
+    CookieJar* m_cookieJar;
 private:
     bool bypassProxy() const;
     void setBypassProxy(bool value);
@@ -43,6 +47,10 @@ private:
     QVariantMap fetchResult() const;
 private slots:
     void _timeoutTestFunction();
+public slots:
+    void setCookieJar(CookieJar* cookieJar);
+    void setCookieJarFromQObject(QObject* cookieJar);
+    CookieJar* cookieJar();
 public:
     Q_INVOKABLE QString _fetchUrl(const QString &url, const QString &method, const QVariant &op = QVariant(""));
     Q_INVOKABLE void _setFetchResult(const QVariantMap &result);

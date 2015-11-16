@@ -18,7 +18,7 @@
 #include "net.h"
 #include "phantom.h"
 
-Net::Net(QObject *parent)
+Net::Net(QObject *parent, CookieJar *cookieJar)
     : QObject(parent)
 {
     setObjectName("Net");
@@ -28,6 +28,7 @@ Net::Net(QObject *parent)
     m_net = new QNetworkAccessManager();
     m_bypassProxy = true;
     m_userAgent = QString();
+    setCookieJar(cookieJar);
 }
 
 QString Net::_fetchUrl(const QString &url, const QString &method, const QVariant &op)
@@ -73,7 +74,7 @@ QString Net::_fetchUrl(const QString &url, const QString &method, const QVariant
                 m_fetchResult.clear();
                 m_fetchResult.insert("url", url);
                 m_fetchResult.insert("file", fileMapUpload.value("file").toString());
-                m_fetchResult.insert("error", "File not found!");
+                m_fetchResult.insert("errorMessage", "File not found!");
                 return "";
             }
             body.append(file.readAll());
@@ -483,5 +484,21 @@ void Net::_timeoutTestFunction()
     qDebug("fetch timeout! abort");
     m_reply->abort();
     m_loop.quit();
+}
+
+void Net::setCookieJar(CookieJar* cookieJar)
+{
+    m_cookieJar = cookieJar;
+    m_net->setCookieJar(m_cookieJar);
+}
+
+void Net::setCookieJarFromQObject(QObject* cookieJar)
+{
+    setCookieJar(qobject_cast<CookieJar*>(cookieJar));
+}
+
+CookieJar* Net::cookieJar()
+{
+    return m_cookieJar;
 }
 /***** ivan > *****/

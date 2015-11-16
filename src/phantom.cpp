@@ -477,7 +477,7 @@ QObject* Phantom::createSQL()
 
 QObject* Phantom::createNet()
 {
-    Net *net = new Net(this);
+    Net *net = new Net(this, m_defaultCookieJar);
     return net;
 }
 
