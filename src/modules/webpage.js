@@ -297,30 +297,30 @@ function decorateNewPage(opts, page) {
         var thisPage = this;
 
         if (arguments.length === 1) {
-            this.openUrl(url, 'get');/***** < ivan ***** this.settings /***** ivan > *****/
+            this.openUrl(url, 'get', pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 2 && typeof arg1 === 'function') {
             this._onPageOpenFinished = function() {
                 thisPage._onPageOpenFinished = null; //< Disconnect callback (should fire only once)
                 arg1.apply(thisPage, arguments);     //< Invoke the actual callback
             };
-            this.openUrl(url, 'get');/***** < ivan ***** this.settings /***** ivan > *****/
+            this.openUrl(url, 'get', pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 2) {
-            this.openUrl(url, arg1);/***** < ivan ***** this.settings /***** ivan > *****/
+            this.openUrl(url, arg1, pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 3 && typeof arg2 === 'function') {
             this._onPageOpenFinished = function() {
                 thisPage._onPageOpenFinished = null; //< Disconnect callback (should fire only once)
                 arg2.apply(thisPage, arguments);     //< Invoke the actual callback
             };
-            this.openUrl(url, arg1);/***** < ivan ***** this.settings /***** ivan > *****/
+            this.openUrl(url, arg1, pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 3) {
             this.openUrl(url, {
                 operation: arg1,
                 data: arg2
-            });/***** < ivan ***** this.settings /***** ivan > *****/
+            }, pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 4) {
             this._onPageOpenFinished = function() {
@@ -330,7 +330,7 @@ function decorateNewPage(opts, page) {
             this.openUrl(url, {
                 operation: arg1,
                 data: arg2
-            });/***** < ivan ***** this.settings /***** ivan > *****/
+            }, pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         } else if (arguments.length === 5) {
             this._onPageOpenFinished = function() {
@@ -341,7 +341,7 @@ function decorateNewPage(opts, page) {
                 operation: arg1,
                 data: arg2,
                 headers : arg3
-            });/***** < ivan ***** this.settings /***** ivan > *****/
+            }, pageSettings);/***** < ivan ***** this.settings /***** ivan > *****/
             return;
         }
         throw "Wrong use of WebPage#open";
@@ -1534,16 +1534,6 @@ function decorateNewPage(opts, page) {
         return this.openResult;
     };
 
-    page.openrawClean = function (html) {
-        return html
-            .replace(/<!--[\s\S]*?-->/g,'')
-            .replace(/<script[\s\S]+?<\/script>/gi,'')
-            .replace(/<noscript[\s\S]+?<\/noscript>/gi,'')
-            // .replace(/^[\s\S]*?<body[\s\S]*?>/gi, '')
-            // .replace(/<\/body>[\s\S]*?$/gi, '')
-            ;
-    }
-
     var _net;
     page.openraw = function () {
         if (arguments.length == 0) return null;
@@ -1558,10 +1548,16 @@ function decorateNewPage(opts, page) {
 
         _net.userAgent = this.settings.userAgent;
         var html = _net.fetch.apply(_net, arguments);
-        html = this.openrawClean(html);
+
+        var jsEnabled = this.settings.javascriptEnabled;
+        this.settings.javascriptEnabled = false;
+
+        page.clearMemoryCache();
 
         this.setContent(html, _net.fetchResult.actualUrl);
         this.waitForPage();
+        this.settings.javascriptEnabled = jsEnabled;
+
         // finish openResult
         finishCurrentRequest(
             _net.fetchResult.status,

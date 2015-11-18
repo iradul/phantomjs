@@ -273,10 +273,7 @@ public:
     QString focusedFrameName() const;
 
 public slots:
-/***** < ivan *****/
-    //void openUrl(const QString& address, const QVariant& op, const QVariantMap& settings);
-    void openUrl(const QString& address, const QVariant& op);
-/***** ivan > *****/
+    void openUrl(const QString& address, const QVariant& op, const QVariantMap& settings);
     void release();
     void close();
 
