@@ -162,6 +162,10 @@ NetworkAccessManager::NetworkAccessManager(QObject* parent, const Config* config
     , m_networkDiskCache(0)
     , m_sslConfiguration(QSslConfiguration::defaultConfiguration())
 {
+/***** < ivan *****/
+    abortAllRequests = false;
+    requestsFilter = new Callback(this);
+/***** ivan > *****/
     if (config->diskCacheEnabled()) {
         m_networkDiskCache = new QNetworkDiskCache(this);
 
@@ -305,6 +309,19 @@ void NetworkAccessManager::setCookieJar(QNetworkCookieJar* cookieJar)
 // protected:
 QNetworkReply* NetworkAccessManager::createRequest(Operation op, const QNetworkRequest& request, QIODevice* outgoingData)
 {
+/***** < ivan *****/
+    if (abortAllRequests)
+    {
+        qDebug() << "Network - Aboring request";
+        return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));;
+    }
+    QVariant res = requestsFilter->call(QVariantList() << request.url().toString().toLower());
+    if (res.canConvert<bool>() && res.toBool()) {
+        qDebug() << "Network - Filter";
+        return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));;
+    }
+    qDebug() << "Network - Creating request :" << request.url().toString();
+/***** ivan > *****/
     QNetworkRequest req(request);
     QString scheme = req.url().scheme().toLower();
 

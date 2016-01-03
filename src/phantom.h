@@ -39,6 +39,10 @@
 #include "system.h"
 #include "childprocess.h"
 #include "cookiejar.h"
+/***** < ivan *****/
+#include <QTimer>
+#include "callback.h"
+/***** ivan > *****/
 
 class WebPage;
 class CustomPage;
@@ -56,6 +60,10 @@ class Phantom : public QObject
     Q_PROPERTY(QVariantList cookies READ cookies WRITE setCookies)
     Q_PROPERTY(bool webdriverMode READ webdriverMode)
     Q_PROPERTY(int remoteDebugPort READ remoteDebugPort)
+/***** < ivan *****/
+    Q_PROPERTY(QString remoteLibraryPath READ remoteLibraryPath WRITE setRemoteLibraryPath)
+    Q_PROPERTY(int globalTimeout READ globalTimeout WRITE setGlobalTimeout)
+/***** ivan > *****/
 
 private:
     // Private constructor: the Phantom class is a singleton
@@ -103,11 +111,27 @@ public:
      * Create `child_process` module instance
      */
     Q_INVOKABLE QObject* _createChildProcess();
+/***** < ivan *****/
+    QString remoteLibraryPath() const;
+    void setRemoteLibraryPath(const QString &remoteLibraryPath);
+    int globalTimeout() const;
+    void setGlobalTimeout(int timeout);
+/***** ivan > *****/
 
 public slots:
     QObject* createCookieJar(const QString& filePath);
     QObject* createWebPage();
     QObject* createWebServer();
+/***** < ivan *****/
+    QObject *createSMTP(const QString &usn, const QString &psw, const QString &host);
+    QObject *createAMQPClient();
+    QObject *createSQL();
+    QObject *createNet();
+    QObject *createEventLoopTimer();
+    QVariantMap detectLanguage(const QString &text, bool isHtml = false);
+    QObject *_getGlobalTimeoutCallback();
+    void showGUI();
+/***** ivan > *****/
     QObject* createFilesystem();
     QObject* createSystem();
     QObject* createCallback();
@@ -220,6 +244,9 @@ private slots:
     void printConsoleMessage(const QString& msg);
 
     void onInitialized();
+/***** < ivan *****/
+    void _globalTimeoutTestFunction();
+/***** ivan > *****/
 
 private:
     void doExit(int code);
@@ -238,6 +265,10 @@ private:
     Config m_config;
     CookieJar* m_defaultCookieJar;
     qreal m_defaultDpi;
+/***** < ivan *****/
+    QTimer m_globalTimeoutTimer;
+    Callback *m_globalTimeoutCallback;
+/***** ivan > *****/
 
     friend class CustomPage;
 };

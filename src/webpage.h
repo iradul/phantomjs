@@ -38,6 +38,12 @@
 #include <QPdfWriter>
 
 #include "cookiejar.h"
+  
+/***** < ivan *****/
+#include <QWebElement>
+#include "itimer.h"
+#include <QTimer>
+/***** ivan > *****/
 
 class Config;
 class CustomPage;
@@ -81,6 +87,16 @@ class WebPage : public QObject, public QWebFrame::PrintCallback
     Q_PROPERTY(int framesCount READ framesCount)
     Q_PROPERTY(QString focusedFrameName READ focusedFrameName)
     Q_PROPERTY(QObject* cookieJar READ cookieJar WRITE setCookieJarFromQObject)
+/***** < ivan *****/
+    Q_PROPERTY(bool _waitForTestFunctionResult READ waitForTestFunctionResult WRITE setWaitForTestFunctionResult)
+    Q_PROPERTY(int historyLimit READ historyLimit WRITE setHistoryLimit)
+    Q_PROPERTY(int historyIndex READ historyIndex)
+    Q_PROPERTY(int historyCount READ historyCount)
+    Q_PROPERTY(int waitTimeout READ waitTimeout WRITE setWaitTimeout)
+    Q_PROPERTY(int waitInterval READ waitInterval WRITE setWaitInterval)
+    Q_PROPERTY(int abortAllRequests READ abortAllRequests WRITE setAbortAllRequests)
+    Q_PROPERTY(QString frameRequestedUrl READ frameRequestedUrl)
+/***** ivan > *****/
 
 public:
     WebPage(QObject* parent, const QUrl& baseUrl = QUrl());
@@ -264,6 +280,9 @@ public slots:
     QObject* _getJsInterruptCallback();
     void _uploadFile(const QString& selector, const QStringList& fileNames);
     void sendEvent(const QString& type, const QVariant& arg1 = QVariant(), const QVariant& arg2 = QVariant(), const QString& mouseButton = QString(), const QVariant& modifierArg = QVariant());
+/***** < ivan *****/
+    QObject *_getFilterCallback();
+/***** ivan > *****/
 
     void setContent(const QString& content, const QString& baseUrl);
     void setFrameContent(const QString& content, const QString& baseUrl);
@@ -484,6 +503,9 @@ public slots:
     void clearMemoryCache();
 
     void setProxy(const QString& proxyUrl);
+/***** < ivan *****/
+    void applySettings(const QVariantMap& defaultSettings);
+/***** ivan > *****/
 
     qreal stringToPointSize(const QString&) const;
     qreal printMargin(const QVariantMap&, const QString&);
@@ -518,7 +540,9 @@ private:
     enum RenderMode { Content, Viewport };
     QImage renderImage(const RenderMode mode = Content);
     bool renderPdf(QPdfWriter& pdfWriter);
-    void applySettings(const QVariantMap& defaultSettings);
+/***** < ivan *****/
+    //void applySettings(const QVariantMap& defaultSettings);
+/***** ivan > *****/
     QString userAgent() const;
 
     /**
@@ -555,6 +579,44 @@ private:
 
     friend class Phantom;
     friend class CustomPage;
+/***** < ivan *****/
+signals:
+    void _waitForTest(int);
+private:
+    QEventLoop m_loop;
+    ITimer *m_timer;
+    const QString *m_waitSelector;
+    // this is holder for _waitForTestFunctionResult property (write only - seter setWaitForTestFunctionResult)
+    // it holds returning value that signal _waitForTest should set as result of "wait for" testing 
+    // this is implemented in sWaitFor javascript function in webpage.js
+    bool m_waitForTestFunctionResult;
+    int m_waitTimeout;
+    int m_waitInterval;
+private:
+    bool waitForTestFunctionResult() const;
+    void setWaitForTestFunctionResult(bool value);
+    int historyLimit() const;
+    void setHistoryLimit(int limit);
+    int historyIndex() const;
+    int historyCount() const;
+    int waitTimeout() const;
+    void setWaitTimeout(int timeout);
+    int waitInterval() const;
+    void setWaitInterval(int interval);
+    bool abortAllRequests() const;
+    void setAbortAllRequests(bool abortAllRequests);
+    QString frameRequestedUrl() const;
+private slots:
+    void _waitForTestFunction();
+public:
+    Q_INVOKABLE void _wait(int timeout);
+    Q_INVOKABLE bool waitForPage(int loadstart_timeout=0);
+    Q_INVOKABLE bool _waitForFunction(int timeout=-1, int interval=-1);
+    Q_INVOKABLE QWebElement _one(const QString &selector) const;
+    Q_INVOKABLE QString resolveUrl(const QString &href) const;
+    Q_INVOKABLE void setContentRaw(const QByteArray & data, const QString & mimeType = QString(), const QString & baseUrl = QString());
+    Q_INVOKABLE void showGUI();
+/***** ivan > *****/
 };
 
 #endif // WEBPAGE_H

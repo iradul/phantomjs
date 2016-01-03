@@ -71,6 +71,9 @@ class Config: public QObject
     Q_PROPERTY(QString webdriverLogFile READ webdriverLogFile WRITE setWebdriverLogFile)
     Q_PROPERTY(QString webdriverLogLevel READ webdriverLogLevel WRITE setWebdriverLogLevel)
     Q_PROPERTY(QString webdriverSeleniumGridHub READ webdriverSeleniumGridHub WRITE setWebdriverSeleniumGridHub)
+/***** < ivan *****/
+    Q_PROPERTY(QString remoteLibraryPath READ remoteLibraryPath WRITE setRemoteLibraryPath)
+/***** ivan > *****/
 
 public:
     Config(QObject* parent = 0);
@@ -208,6 +211,11 @@ public:
     void setWebdriverSeleniumGridHub(const QString& hubUrl);
     QString webdriverSeleniumGridHub() const;
 
+/***** < ivan *****/
+    void setRemoteLibraryPath(const QString& remoteLibraryPath);
+    QString remoteLibraryPath() const;
+/***** ivan > *****/
+
 public slots:
     void handleSwitch(const QString& sw);
     void handleOption(const QString& option, const QVariant& value);
@@ -267,6 +275,9 @@ private:
     QString m_webdriverLogFile;
     QString m_webdriverLogLevel;
     QString m_webdriverSeleniumGridHub;
+/***** < ivan *****/
+    QString m_remoteLibraryPath;
+/***** ivan > *****/
 };
 
 #endif // CONFIG_H

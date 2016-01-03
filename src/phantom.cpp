@@ -51,6 +51,15 @@
 #include "utils.h"
 #include "webpage.h"
 #include "webserver.h"
+  
+/***** < ivan *****/
+#include "smtp.h"
+#include "qamqp/qamqpclient.h"
+#include "sql.h"
+#include "net.h"
+#include "cld2/public/compact_lang_det.h"
+#include "webbrowser.h"
+/***** ivan > *****/
 
 static Phantom* phantomInstance = NULL;
 
@@ -70,6 +79,11 @@ Phantom::Phantom(QObject* parent)
     m_config.init(&args);
     // Apply debug configuration as early as possible
     Utils::printDebugMessages = m_config.printDebugMessages();
+/***** < ivan *****/
+    m_globalTimeoutTimer.setSingleShot(true);
+    connect(&m_globalTimeoutTimer, SIGNAL(timeout()), SLOT(_globalTimeoutTestFunction()));
+    m_globalTimeoutCallback = NULL;
+/***** ivan > *****/
 }
 
 void Phantom::init()
@@ -207,6 +221,12 @@ bool Phantom::execute()
             m_returnValue = -1;
             return false;
         }
+    /***** < ivan *****/
+    #ifdef Q_OS_WIN32
+    } else if (m_config.scriptFile().isEmpty()) {
+        showGUI();
+    #endif
+    /***** ivan > *****/
     } else if (m_config.scriptFile().isEmpty()) {                       // REPL mode requested
         qDebug() << "Phantom - execute: Starting REPL mode";
 
@@ -260,6 +280,18 @@ void Phantom::setLibraryPath(const QString& libraryPath)
 {
     m_page->setLibraryPath(libraryPath);
 }
+
+/***** < ivan *****/
+QString Phantom::remoteLibraryPath() const
+{
+    return m_config.remoteLibraryPath();
+}
+
+void Phantom::setRemoteLibraryPath(const QString &remoteLibraryPath)
+{
+    m_config.setRemoteLibraryPath(remoteLibraryPath);
+}
+/***** ivan > *****/
 
 QVariantMap Phantom::version() const
 {
@@ -443,13 +475,114 @@ int Phantom::remoteDebugPort() const
     return m_config.remoteDebugPort();
 }
 
+/***** < ivan *****/
+
+QObject* Phantom::createSMTP(const QString &usn, const QString &psw, const QString &host)
+{
+    Smtp *smtp = new Smtp(usn, psw, host);
+    return smtp;
+}
+
+QObject* Phantom::createAMQPClient()
+{
+    QAmqpClient *client = new QAmqpClient(this);
+    return client;
+}
+
+QObject* Phantom::createSQL()
+{
+    SQL *sql = new SQL(this);
+    return sql;
+}
+
+QObject* Phantom::createNet()
+{
+    Net *net = new Net(this, m_defaultCookieJar);
+    return net;
+}
+
+QObject* Phantom::createEventLoopTimer()
+{
+    ITimer *timer = new ITimer(this);
+    return timer;
+}
+
+QVariantMap Phantom::detectLanguage(const QString &text, bool isHtml)
+{
+    CLD2::Language language3[3];
+    int percent3[3];
+    int textBytes[1];
+    bool isReliable[1];
+
+    CLD2::Language language = CLD2::ExtDetectLanguageSummary(
+        text.toUtf8().constData(),
+        text.length(),
+        !isHtml,
+        language3,
+        percent3,
+        textBytes,
+        isReliable);
+
+    QVariantMap result;
+    result.insert("long", QString(QLatin1String(CLD2::LanguageName(language))));
+    result.insert("short", QString(QLatin1String(CLD2::LanguageCode(language))));
+    result.insert("accuracy", percent3[0]);
+
+    return result;
+}
+
+int Phantom::globalTimeout() const
+{
+    return (m_globalTimeoutTimer.isActive()) ? m_globalTimeoutTimer.interval() / 1000 : 0;
+}
+
+void Phantom::setGlobalTimeout(int timeout)
+{
+    if (timeout <= 0) {
+        qDebug() << "Phantom - Global timeout stopped";
+        m_globalTimeoutTimer.stop();
+    }
+    else {
+        qDebug() << "Phantom - Global timeout started" << timeout;
+        m_globalTimeoutTimer.setInterval(timeout * 1000);
+        m_globalTimeoutTimer.start();
+    }
+}
+
+void Phantom::_globalTimeoutTestFunction()
+{
+    m_globalTimeoutCallback->call(QVariantList() << globalTimeout());
+    Terminal::instance()->cout(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + " global timeout event");
+    Phantom::instance()->exit();
+}
+
+QObject* Phantom::_getGlobalTimeoutCallback() {
+    qDebug() << "PhantomCallbacks - getGlobalTimeoutCallback";
+
+    if (!m_globalTimeoutCallback) {
+        m_globalTimeoutCallback = new Callback(this);
+    }
+    return m_globalTimeoutCallback;
+}
+
+void Phantom::showGUI() {
+    if (m_pages.count() == 1) {
+        m_page->mainFrame()->evaluateJavaScript(QString("var page = require('webpage').create(); page.onError=function(){}; page.open('http://www.google.com')"),QString(""));
+    }
+    WebBrowser::run(m_page->mainFrame()->page(), (WebPage*)m_pages.last());
+}
+
+/***** ivan > *****/
+
 void Phantom::exit(int code)
 {
-    if (m_config.debug()) {
-        Terminal::instance()->cout("Phantom::exit() called but not quitting in debug mode.");
-    } else {
+/***** < ivan *****/
+    // if (m_config.debug()) {
+    //     Terminal::instance()->cout("Phantom::exit() called but not quitting in debug mode.");
+    // } else {
         doExit(code);
-    }
+    // }
+/***** ivan > *****/
 }
 
 void Phantom::debugExit(int code)
@@ -547,5 +680,8 @@ void Phantom::doExit(int code)
     }
     m_pages.clear();
     m_page = 0;
+/***** < ivan *****/
+    WebBrowser::exit();
+/***** ivan > *****/
     QApplication::instance()->exit(code);
 }

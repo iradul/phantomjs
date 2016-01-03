@@ -9,6 +9,15 @@
         <file>modules/system.js</file>
         <file>modules/child_process.js</file>
         <file>modules/cookiejar.js</file>
+<!-- /***** < ivan *****/ -->
+        <file>modules/smtp.js</file>
+        <file>modules/converter.js</file>
+        <file>modules/sql.js</file>
+        <file>modules/amqp.js</file>
+        <file>modules/net.js</file>
+        <file>modules/utils.js</file>
+        <file>modules/wait.js</file>
+<!-- /***** ivan > *****/ -->
         <file>repl.js</file>
     </qresource>
 </RCC>

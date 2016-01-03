@@ -18,7 +18,26 @@ win32 {
      qt/qtwebkit/Source/WebCore/generated/InspectorBackendCommands.qrc
 }
 
+# /***** < ivan *****/
+win32: {
+  HEADERS += webbrowser_win/webbrowser.h
+  SOURCES += webbrowser_win/webbrowser.cpp
+  INCLUDEPATH += webbrowser_win
+}
+!win32: {
+  HEADERS += webbrowser_others/webbrowser.h
+  SOURCES += webbrowser_others/webbrowser.cpp
+  INCLUDEPATH += webbrowser_others
+}
+# /***** ivan > *****/
+
 HEADERS = \
+# /***** < ivan *****/
+    net.h \
+    sql.h \
+    itimer.h \
+    smtp.h \
+# /***** ivan > *****/
     callback.h \
     childprocess.h \
     config.h \
@@ -38,6 +57,12 @@ HEADERS = \
     webserver.h
 
 SOURCES = \
+# /***** < ivan *****/
+    net.cpp \
+    sql.cpp \
+    itimer.cpp \
+    smtp.cpp \
+# /***** ivan > *****/
     callback.cpp \
     childprocess.cpp \
     config.cpp \
@@ -57,6 +82,12 @@ SOURCES = \
     webserver.cpp
 
 OTHER_FILES = \
+# /***** < ivan *****/
+    modules/net.js \
+    modules/amqp.js \
+    modules/sql.js \
+    modules/wait.js \
+# /***** ivan > *****/
     bootstrap.js \
     configurator.js \
     modules/child_process.js \
@@ -69,6 +100,10 @@ OTHER_FILES = \
 include(mongoose/mongoose.pri)
 include(linenoise/linenoise.pri)
 include(qcommandline/qcommandline.pri)
+# /***** < ivan *****/
+include(qamqp/qamqp.pri)
+include(cld2/cld2.pri)
+# /***** ivan > *****/
 
 win32: RC_FILE = phantomjs_win.rc
 os2:   RC_FILE = phantomjs_os2.rc
